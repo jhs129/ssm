@@ -1,6 +1,21 @@
 import Link from "next/link"
 import Image from "next/image"
-import { Headphones, ExternalLink } from "lucide-react"
+import { Headphones, ExternalLink, Play } from "lucide-react"
+
+const videos = [
+  {
+    id: "p82u25ET1qM",
+    title: "LIVE at the Roswell Market Expo with Rob Madden",
+  },
+  {
+    id: "6CXo4Rca4A4",
+    title: "LIVE at the Roswell Market Expo with Rob Madden (Part 2)",
+  },
+  {
+    id: "DxbEq2_oivA",
+    title: "A Football Season Look Ahead, Gainesville Turnover, & MASS Coaching Carousel Cycle",
+  },
+]
 
 export function ListenSection() {
   return (
@@ -14,26 +29,59 @@ export function ListenSection() {
             <span className="text-balance">Tune In</span>
           </h2>
           <p className="mt-4 max-w-2xl text-lg leading-relaxed text-muted-foreground">
-            {"John Schneider's Georgia High School Sports Show is available on Spotify. Listen wherever you are."}
+            {"Watch the latest episodes of John Schneider's Georgia High School Sports Show on YouTube."}
           </p>
         </div>
 
-        <div className="mx-auto max-w-4xl">
-          {/* Spotify Embed */}
-          <div className="overflow-hidden rounded-lg border border-border">
-            <iframe
-              src="https://open.spotify.com/embed/show/john-schneiders-georgia-high-school-sports-show?utm_source=generator&theme=0"
-              width="100%"
-              height="352"
-              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-              loading="lazy"
-              title="John Schneider's Georgia High School Sports Show on Spotify"
-              className="w-full"
-            />
+        {/* Video Gallery */}
+        <div className="mx-auto max-w-6xl">
+          <div className="grid gap-6 md:grid-cols-3">
+            {videos.map((video) => (
+              <div key={video.id} className="overflow-hidden rounded-lg border border-border">
+                <div className="relative aspect-video w-full">
+                  <iframe
+                    src={`https://www.youtube.com/embed/${video.id}`}
+                    title={video.title}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    loading="lazy"
+                    className="absolute inset-0 h-full w-full"
+                  />
+                </div>
+                <div className="p-4">
+                  <h3 className="line-clamp-2 font-display text-sm font-bold uppercase tracking-wide text-foreground">
+                    {video.title}
+                  </h3>
+                </div>
+              </div>
+            ))}
           </div>
 
-          {/* Podcast Card */}
-          <div className="mt-8 flex flex-col items-center gap-8 rounded-lg border border-border bg-background p-8 sm:flex-row">
+          {/* YouTube Channel CTA */}
+          <div className="mt-8 flex justify-center">
+            <Link
+              href="https://youtube.com/@SchneiderSportsMedia"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center gap-3 rounded-lg border border-border bg-background px-8 py-4 transition-all hover:border-secondary/50"
+            >
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#FF0000] text-white">
+                <Play className="h-5 w-5" />
+              </div>
+              <div className="text-left">
+                <p className="font-display text-sm font-bold uppercase tracking-wide text-foreground">
+                  @SchneiderSportsMedia
+                </p>
+                <p className="text-xs text-muted-foreground">Watch more on YouTube</p>
+              </div>
+              <ExternalLink className="ml-2 h-4 w-4 text-muted-foreground transition-colors group-hover:text-foreground" />
+            </Link>
+          </div>
+        </div>
+
+        {/* Podcast Card */}
+        <div className="mx-auto mt-12 max-w-4xl">
+          <div className="flex flex-col items-center gap-8 rounded-lg border border-border bg-background p-8 sm:flex-row">
             <div className="relative h-32 w-32 flex-shrink-0 overflow-hidden rounded-lg border border-border">
               <Image
                 src="/images/ga-podcast-logo.png"
