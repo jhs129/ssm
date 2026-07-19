@@ -10,7 +10,12 @@
     "lint": "echo 'No linting configured for components package'"
   },
   "dependencies": {
-    "@repo/types": "workspace:*"
+    "@builder.io/sdk-react": "^5.2.3",
+    "@radix-ui/react-slot": "1.1.1",
+    "@repo/types": "workspace:*",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^2.5.5"
   },
   "devDependencies": {
     "@types/node": "^22",
