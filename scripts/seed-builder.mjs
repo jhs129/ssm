@@ -23,8 +23,16 @@
  * consumer for those models; its nav/footer stay coded.
  *
  * Credentials are read from apps/web/.env.local:
- *   - BUILDER_PRIVATE_KEY          (bpk-...)  — required, for writes
- *   - NEXT_PUBLIC_BUILDER_API_KEY             — required, to check existing content
+ *   - BUILDER_PRIVATE_KEY              (bpk-...)  — required, for writes
+ *   - NEXT_PUBLIC_BUILDER_API_KEY                 — required, to check existing content
+ *   - VERCEL_AUTOMATION_BYPASS_SECRET  (bps-...)  — optional, see below
+ *
+ * VERCEL_AUTOMATION_BYPASS_SECRET, if set, gets baked into the generated
+ * preview URL logic (not this file) so Builder's editor iframe can load
+ * preview deployments sitting behind Vercel Deployment Protection. Without
+ * it, protected preview URLs load a Vercel SSO page in the iframe, which
+ * also sends X-Frame-Options: DENY and fails to render at all. See
+ * https://vercel.com/docs/deployment-protection/methods-to-bypass-deployment-protection/protection-bypass-automation
  */
 
 import { GraphQLClient, gql } from "graphql-request";
@@ -100,14 +108,27 @@ const metadataField = (modelId) =>
 // This is the "code" version of the preview URL (the `< >` toggle in the editor),
 // stored as a JS function body. See https://www.builder.io/c/docs/dynamic-preview-urls.
 
+// Appended to the generated preview URL below (not to this file's own source)
+// so a Vercel Deployment Protection SSO wall doesn't block Builder's editor
+// iframe. `samesitenone`, not `true`, is required specifically for iframe
+// embedding — see the module doc comment above for the reference link.
+const BYPASS_SECRET = process.env.VERCEL_AUTOMATION_BYPASS_SECRET || "";
+const bypassParams = BYPASS_SECRET
+  ? "x-vercel-protection-bypass=" + BYPASS_SECRET + "&x-vercel-set-bypass-cookie=samesitenone"
+  : "";
+
 // The page model is the catch-all route — preview the urlPath directly.
-const PAGE_PREVIEW_URL_LOGIC = "return `${space.siteUrl}${targeting.urlPath}`;";
+const PAGE_PREVIEW_URL_LOGIC = bypassParams
+  ? "return `${space.siteUrl}${targeting.urlPath}?" + bypassParams + "`;"
+  : "return `${space.siteUrl}${targeting.urlPath}`;";
 
 // Articles render at /blogs/<handle>; fall back to localhost when no site URL
 // is configured on the space.
 const ARTICLE_PREVIEW_URL_LOGIC = [
   "const baseUrl = space.siteUrl || 'http://localhost:3000';",
-  "return `${baseUrl}/blogs/${content.data.handle || '_'}?preview=true`;",
+  bypassParams
+    ? "return `${baseUrl}/blogs/${content.data.handle || '_'}?preview=true&" + bypassParams + "`;"
+    : "return `${baseUrl}/blogs/${content.data.handle || '_'}?preview=true`;",
 ].join("\n");
 
 // --- metadata model definition ---
