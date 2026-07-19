@@ -13,6 +13,7 @@
     "build:web": "turbo run build --filter=web"
   },
   "devDependencies": {
+    "graphql-request": "^7.1.2",
     "turbo": "^2.5.5"
   },
   "pnpm": {
