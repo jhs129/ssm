@@ -1,6 +1,7 @@
 import { cache } from "react"
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
+import Image from "next/image"
 import { fetchOneEntry, fetchEntries } from "@builder.io/sdk-react"
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
@@ -116,6 +117,20 @@ export default async function BlogPage({ params, searchParams }: BlogRouteProps)
             {publishedDate && <p className="text-sm text-muted-foreground">Published {publishedDate}</p>}
           </div>
         </section>
+        {article?.data?.image && (
+          <div className="mx-auto -mt-8 w-full max-w-5xl px-4 lg:-mt-12 lg:px-8">
+            <div className="relative aspect-[21/9] w-full overflow-hidden rounded-lg shadow-lg">
+              <Image
+                src={article.data.image}
+                alt={article.data?.title || ""}
+                fill
+                priority
+                className="object-cover"
+                sizes="(min-width: 1024px) 1024px, 100vw"
+              />
+            </div>
+          </div>
+        )}
         <article className="mx-auto w-full max-w-[800px] px-4 py-12 lg:px-8">
           <RenderBuilderContent content={article} model="article" />
         </article>
