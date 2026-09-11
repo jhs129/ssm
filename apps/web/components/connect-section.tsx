@@ -4,8 +4,8 @@ import { Mail, Instagram, Youtube, ExternalLink } from "lucide-react"
 const socials = [
   {
     name: "Email",
-    handle: "jschneider.sports.media@gmail.com",
-    href: "mailto:jschneider.sports.media@gmail.com",
+    handle: "john@schneidersportsmedia.com",
+    href: "mailto:john@schneidersportsmedia.com",
     icon: Mail,
     description: "Reach out directly for inquiries, collaborations, or tips.",
   },
