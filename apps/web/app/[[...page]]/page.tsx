@@ -33,7 +33,7 @@ function shouldExcludePath(url: string): boolean {
   return EXCLUDED_DIRECTORIES.some((dir) => url === dir || url.startsWith(`${dir}/`))
 }
 
-export async function generateStaticParams(): Promise<{ page: string[] }[]> {
+export async function generateStaticParams(): Promise<{ page?: string[] }[]> {
   const pages = await fetchEntries({
     model: "page",
     apiKey: BUILDER_API_KEY,
@@ -48,7 +48,7 @@ export async function generateStaticParams(): Promise<{ page: string[] }[]> {
 }
 
 interface PageRouteProps {
-  params: Promise<{ page: string[] }>
+  params: Promise<{ page?: string[] }>
   searchParams: Promise<Record<string, string | string[] | undefined>>
 }
 
@@ -57,11 +57,13 @@ export async function generateMetadata({ params }: PageRouteProps): Promise<Meta
   const urlPath = resolvePageUrlPath(segments)
   const page = await fetchPage(urlPath)
 
+  const isHomepage = urlPath === "/"
+
   return {
     title: page?.data?.title || undefined,
     description: page?.data?.metadata?.description || undefined,
     keywords: page?.data?.metadata?.keywords,
-    robots: { index: false, follow: false },
+    robots: isHomepage ? undefined : { index: false, follow: false },
   }
 }
 
