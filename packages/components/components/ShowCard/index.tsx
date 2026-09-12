@@ -52,12 +52,12 @@ export function ShowCard({ show }: ShowCardProps) {
         </div>
       )}
       <div className="flex flex-1 flex-col gap-2 p-6">
-        <h3 className="font-display text-lg font-bold uppercase tracking-wide text-foreground">
+        <h3 className="line-clamp-2 min-h-14 font-display text-lg font-bold uppercase tracking-wide text-foreground">
           {data.name}
         </h3>
-        {data.tagline && (
-          <p className="text-sm leading-relaxed text-muted-foreground">{data.tagline}</p>
-        )}
+        <p className="line-clamp-2 min-h-11 text-sm leading-relaxed text-muted-foreground">
+          {data.tagline || ''}
+        </p>
         <span className="mt-auto pt-4 text-xs font-semibold uppercase tracking-wider text-primary">
           View Show →
         </span>
