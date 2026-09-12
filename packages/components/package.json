@@ -6,8 +6,7 @@
   "types": "./index.ts",
   "scripts": {
     "build": "tsc",
-    "dev": "tsc --watch",
-    "lint": "echo 'No linting configured for components package'"
+    "dev": "tsc --watch"
   },
   "dependencies": {
     "@builder.io/sdk-react": "^5.2.3",
