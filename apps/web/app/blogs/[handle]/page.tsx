@@ -3,8 +3,6 @@ import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import Image from "next/image"
 import { fetchOneEntry, fetchEntries } from "@builder.io/sdk-react"
-import { SiteHeader } from "@/components/site-header"
-import { SiteFooter } from "@/components/site-footer"
 import { ArticleSchemaData } from "@/components/ArticleSchemaData"
 import RenderBuilderContent from "@/components/RenderBuilderContent"
 import { BUILDER_API_KEY } from "@/lib/builder"
@@ -89,8 +87,7 @@ export default async function BlogPage({ params, searchParams }: BlogRouteProps)
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || ""
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <SiteHeader />
+    <>
       {article && publishedTimestamp && (
         <ArticleSchemaData
           headline={article.data?.title || ""}
@@ -135,7 +132,6 @@ export default async function BlogPage({ params, searchParams }: BlogRouteProps)
           <RenderBuilderContent content={article} model="article" />
         </article>
       </main>
-      <SiteFooter />
-    </div>
+    </>
   )
 }

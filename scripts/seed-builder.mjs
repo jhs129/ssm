@@ -22,9 +22,16 @@
  *      shared `metadata` model-field appended, and seeds the three real
  *      show entries (Schneider Sports Media, Inside the Nest RHS, Atlanta
  *      Sportscast).
+ *   6. Creates the `site-properties` data model (site name/logo/contact/social
+ *      + `defaultHeader`/`defaultFooter` symbol-reference fields, resolved by
+ *      SiteHeader/SiteFooter as: page override symbol → this site default
+ *      symbol → bare component), and seeds a single entry named
+ *      "schneider-sports-media" with the site's real current details. The
+ *      `defaultHeader`/`defaultFooter` symbols themselves are author-created —
+ *      no default value is seeded for them.
  *
- * Skips `site-context`, `navigation`, and `url-redirect` — ssm has no
- * consumer for those models; its nav/footer stay coded.
+ * Skips `navigation` and `url-redirect` — ssm has no consumer for those
+ * models.
  *
  * Credentials are read from apps/web/.env.local:
  *   - BUILDER_PRIVATE_KEY              (bpk-...)  — required, for writes
@@ -71,8 +78,16 @@ const SHOW_MODEL_NAME = "show";
 // Shared SEO metadata model, referenced as a `model`-type field by every model
 // that maps 1:1 to a web page (article, page) so they share one metadata shape.
 const METADATA_MODEL_NAME = "metadata";
+// Site-wide settings singleton (logo, contact, social links, default
+// header/footer symbols) — mirrors the "site-context" pattern used on other
+// Builder-powered sites in this org.
+const SITE_PROPERTIES_MODEL_NAME = "site-properties";
+const SITE_PROPERTIES_NAME = "schneider-sports-media";
 // Builder's built-in catch-all page model (not created by this script).
 const PAGE_MODEL_NAME = "page";
+// Builder's built-in `symbol` model (not created by this script). The site
+// header/footer are symbols referenced from site-properties.
+const SYMBOL_MODEL_NAME = "symbol";
 const ADMIN_API = "https://cdn.builder.io/api/v2/admin";
 const writeApi = (model) => `https://builder.io/api/v1/write/${model}`;
 
@@ -362,6 +377,87 @@ const SHOW_ENTRIES = [
   },
 ];
 
+// --- site-properties model definition ---
+// kind: "data" — a singleton fetched by name, not routed or rendered on its
+// own. defaultHeader/defaultFooter point at Builder's built-in `symbol`
+// model, letting an editor fully replace the site header/footer visually.
+const SITE_PROPERTIES_MODEL_BODY = {
+  name: SITE_PROPERTIES_MODEL_NAME,
+  kind: "data",
+  showTargeting: false,
+  fields: [
+    field("siteName", "text", {
+      helperText: "Display name of the site, used in metadata and schema.",
+      defaultValue: "Schneider Sports Media",
+    }),
+    field("logo", "file", {
+      helperText: "Site logo image (used by the header/footer and organization schema).",
+      allowedFileTypes: ["jpeg", "jpg", "png", "svg", "webp"],
+      defaultValue: "/images/ssm-logo.png",
+    }),
+    field("organization", "object", {
+      helperText: "Legal/organization details for SEO schema.",
+      subFields: [
+        field("name", "text", { defaultValue: "Schneider Sports Media" }),
+        field("description", "longText"),
+        field("address", "object", {
+          subFields: [
+            field("address1", "text"),
+            field("city", "text"),
+            field("state", "text"),
+            field("postalCode", "text"),
+            field("country", "text", { defaultValue: "US" }),
+          ],
+        }),
+      ],
+    }),
+    field("contact", "object", {
+      helperText: "Primary contact details for organization schema.",
+      subFields: [
+        field("telephone", "text"),
+        field("email", "text"),
+        field("areaServed", "text"),
+      ],
+    }),
+    field("socialNetworks", "list", {
+      helperText: "Social profile links (used in organization schema sameAs).",
+      subFields: [field("name", "text"), field("href", "url")],
+    }),
+    field("googleAnalyticsId", "text", {
+      helperText: "Google Analytics measurement ID (e.g. G-XXXXXXX). Not yet wired up.",
+    }),
+    field("defaultHeader", "reference", {
+      model: SYMBOL_MODEL_NAME,
+      helperText: "Default site header symbol (fully replaces SiteHeader when set).",
+    }),
+    field("defaultFooter", "reference", {
+      model: SYMBOL_MODEL_NAME,
+      helperText: "Default site footer symbol (fully replaces SiteFooter when set).",
+    }),
+  ],
+};
+
+const SITE_PROPERTIES_DATA = {
+  siteName: "Schneider Sports Media",
+  logo: "/images/ssm-logo.png",
+  organization: {
+    name: "Schneider Sports Media",
+    description:
+      "Authentic, high-quality sports media and podcasts covering the Georgia high school sports scene.",
+    address: { address1: "", city: "Roswell", state: "GA", postalCode: "", country: "US" },
+  },
+  contact: {
+    telephone: "",
+    email: "jschneider.sports.media@gmail.com",
+    areaServed: "Georgia",
+  },
+  socialNetworks: [
+    { name: "Instagram", href: "https://instagram.com/schneidersports_media" },
+    { name: "YouTube", href: "https://youtube.com/@SchneiderSportsMedia" },
+  ],
+  googleAnalyticsId: "",
+};
+
 const SAMPLE_ARTICLE_HANDLE = "hello-world";
 
 const SAMPLE_ARTICLE_DATA = {
@@ -554,6 +650,10 @@ async function main() {
     await ensureModelHasFields(SHOW_MODEL_NAME, [metaField], models);
   }
 
+  // site-properties has no metadata field (it isn't a page), so create it
+  // as-is.
+  const createdSiteProperties = await ensureModel(SITE_PROPERTIES_MODEL_BODY, existingNames);
+
   // Dynamic preview URLs: the built-in `page` model always needs it set here;
   // the `article`/`show` models get it from their *_BODY when freshly
   // created, otherwise update the existing model.
@@ -567,7 +667,7 @@ async function main() {
 
   // The CDN takes a moment to register a brand-new model before it will
   // accept writes against it.
-  if (createdArticle || createdShow) {
+  if (createdArticle || createdShow || createdSiteProperties) {
     await new Promise((r) => setTimeout(r, 2000));
   }
 
@@ -576,6 +676,8 @@ async function main() {
   for (const show of SHOW_ENTRIES) {
     await ensureContent(SHOW_MODEL_NAME, show.slug, show.data);
   }
+
+  await ensureContent(SITE_PROPERTIES_MODEL_NAME, SITE_PROPERTIES_NAME, SITE_PROPERTIES_DATA);
 
   console.log("\nDone.\n");
 }

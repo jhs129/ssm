@@ -5,8 +5,6 @@ import Image from "next/image"
 import Link from "next/link"
 import { Youtube, ExternalLink } from "lucide-react"
 import { fetchOneEntry, fetchEntries } from "@builder.io/sdk-react"
-import { SiteHeader } from "@/components/site-header"
-import { SiteFooter } from "@/components/site-footer"
 import { BUILDER_API_KEY } from "@/lib/builder"
 import { isPreviewingFromSearchParams } from "@/lib/page-utils"
 
@@ -100,152 +98,148 @@ export default async function ShowPage({ params, searchParams }: ShowRouteProps)
   const episodes: Episode[] = Array.isArray(data.episodes) ? data.episodes : []
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <SiteHeader />
-      <main id="main-content" className="flex-grow pt-16" role="main">
-        <section className="relative overflow-hidden border-b border-border">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_hsl(225,100%,50%,0.08),_transparent_60%)]" />
-          <div className="relative z-10 mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 lg:grid-cols-[auto_1fr] lg:gap-16 lg:px-8 lg:py-24">
-            {data.logo && (
-              <div className="relative mx-auto aspect-square w-48 overflow-hidden rounded-lg border border-border shadow-xl shadow-primary/10 lg:w-64">
-                <Image
-                  src={data.logo}
-                  alt={`${data.name || "Show"} logo`}
-                  fill
-                  className="object-cover"
-                />
-              </div>
-            )}
-            <div className="flex flex-col items-center gap-4 text-center lg:items-start lg:text-left">
-              <h1 className="text-balance font-display text-4xl font-bold uppercase tracking-tight text-foreground md:text-5xl">
-                {data.name}
-              </h1>
-              {data.tagline && (
-                <p className="max-w-2xl text-lg leading-relaxed text-muted-foreground">
-                  {data.tagline}
-                </p>
-              )}
-              <div className="mt-2 flex flex-wrap justify-center gap-3 lg:justify-start">
-                {hasYoutube && (
-                  <Link
-                    href={data.youtubeUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 rounded-md border-2 border-secondary bg-transparent px-6 py-3 font-display text-sm font-bold uppercase tracking-wider text-secondary transition-all hover:bg-secondary hover:text-secondary-foreground"
-                  >
-                    <Youtube className="h-4 w-4" />
-                    Watch on YouTube
-                  </Link>
-                )}
-                {hasSpotify && (
-                  <Link
-                    href={data.spotifyUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 rounded-md bg-primary px-6 py-3 font-display text-sm font-bold uppercase tracking-wider text-primary-foreground transition-all hover:bg-primary/80"
-                  >
-                    <SpotifyIcon className="h-4 w-4" />
-                    Listen on Spotify
-                  </Link>
-                )}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {data.description && (
-          <section className="mx-auto max-w-3xl px-4 py-12 text-center lg:px-8">
-            <span className="mb-3 block font-display text-sm font-bold uppercase tracking-[0.2em] text-secondary">
-              About the Show
-            </span>
-            <p className="text-lg leading-relaxed text-muted-foreground">{data.description}</p>
-          </section>
-        )}
-
-        {episodes.length > 0 && (
-          <section className="border-t border-border bg-card py-16">
-            <div className="mx-auto max-w-6xl px-4 lg:px-8">
-              <div className="mb-10 flex flex-col items-center text-center">
-                <span className="mb-3 font-display text-sm font-bold uppercase tracking-[0.2em] text-secondary">
-                  Recent Episodes
-                </span>
-                <h2 className="font-display text-3xl font-bold uppercase tracking-tight text-foreground md:text-4xl">
-                  Catch Up On {data.name}
-                </h2>
-              </div>
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {episodes.map((episode, index) => {
-                  const formattedDate = formatEpisodeDate(episode.publishDate)
-                  return (
-                    <Link
-                      key={episode.url || index}
-                      href={episode.url || "#"}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group flex flex-col overflow-hidden rounded-lg border border-border bg-background transition-all hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5"
-                    >
-                      {episode.thumbnail && (
-                        <div className="relative aspect-video w-full overflow-hidden">
-                          <Image
-                            src={episode.thumbnail}
-                            alt={episode.title || "Episode thumbnail"}
-                            fill
-                            className="object-cover transition-transform group-hover:scale-105"
-                          />
-                        </div>
-                      )}
-                      <div className="flex flex-1 flex-col gap-2 p-5">
-                        <h3 className="line-clamp-2 font-display text-base font-bold leading-snug text-foreground">
-                          {episode.title}
-                        </h3>
-                        {formattedDate && (
-                          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                            {formattedDate}
-                          </span>
-                        )}
-                        <span className="mt-auto pt-3 text-xs font-semibold uppercase tracking-wider text-primary">
-                          Watch / Listen →
-                        </span>
-                      </div>
-                    </Link>
-                  )
-                })}
-              </div>
-            </div>
-          </section>
-        )}
-
-        {embedUrl && (
-          <section className="mx-auto max-w-4xl px-4 pb-16 lg:px-8">
-            <div className="overflow-hidden rounded-lg border border-border shadow-lg">
-              <iframe
-                src={embedUrl}
-                title={`${data.name || "Show"} latest episodes`}
-                className={isSpotifyEmbed ? "h-[352px] w-full" : "aspect-video w-full"}
-                allow="autoplay; clipboard-write; encrypted-media; picture-in-picture"
-                allowFullScreen
-                loading="lazy"
+    <main id="main-content" className="flex-grow pt-16" role="main">
+      <section className="relative overflow-hidden border-b border-border">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_hsl(225,100%,50%,0.08),_transparent_60%)]" />
+        <div className="relative z-10 mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 lg:grid-cols-[auto_1fr] lg:gap-16 lg:px-8 lg:py-24">
+          {data.logo && (
+            <div className="relative mx-auto aspect-square w-48 overflow-hidden rounded-lg border border-border shadow-xl shadow-primary/10 lg:w-64">
+              <Image
+                src={data.logo}
+                alt={`${data.name || "Show"} logo`}
+                fill
+                className="object-cover"
               />
             </div>
-          </section>
-        )}
+          )}
+          <div className="flex flex-col items-center gap-4 text-center lg:items-start lg:text-left">
+            <h1 className="text-balance font-display text-4xl font-bold uppercase tracking-tight text-foreground md:text-5xl">
+              {data.name}
+            </h1>
+            {data.tagline && (
+              <p className="max-w-2xl text-lg leading-relaxed text-muted-foreground">
+                {data.tagline}
+              </p>
+            )}
+            <div className="mt-2 flex flex-wrap justify-center gap-3 lg:justify-start">
+              {hasYoutube && (
+                <Link
+                  href={data.youtubeUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 rounded-md border-2 border-secondary bg-transparent px-6 py-3 font-display text-sm font-bold uppercase tracking-wider text-secondary transition-all hover:bg-secondary hover:text-secondary-foreground"
+                >
+                  <Youtube className="h-4 w-4" />
+                  Watch on YouTube
+                </Link>
+              )}
+              {hasSpotify && (
+                <Link
+                  href={data.spotifyUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 rounded-md bg-primary px-6 py-3 font-display text-sm font-bold uppercase tracking-wider text-primary-foreground transition-all hover:bg-primary/80"
+                >
+                  <SpotifyIcon className="h-4 w-4" />
+                  Listen on Spotify
+                </Link>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
 
-        <section className="border-t border-border bg-card py-12">
-          <div className="mx-auto flex max-w-4xl flex-col items-center gap-4 px-4 text-center lg:px-8">
-            <p className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-              Explore the other shows
-            </p>
-            <Link
-              href="/#shows"
-              className="flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
-            >
-              See all shows
-              <ExternalLink className="h-3 w-3" />
-            </Link>
+      {data.description && (
+        <section className="mx-auto max-w-3xl px-4 py-12 text-center lg:px-8">
+          <span className="mb-3 block font-display text-sm font-bold uppercase tracking-[0.2em] text-secondary">
+            About the Show
+          </span>
+          <p className="text-lg leading-relaxed text-muted-foreground">{data.description}</p>
+        </section>
+      )}
+
+      {episodes.length > 0 && (
+        <section className="border-t border-border bg-card py-16">
+          <div className="mx-auto max-w-6xl px-4 lg:px-8">
+            <div className="mb-10 flex flex-col items-center text-center">
+              <span className="mb-3 font-display text-sm font-bold uppercase tracking-[0.2em] text-secondary">
+                Recent Episodes
+              </span>
+              <h2 className="font-display text-3xl font-bold uppercase tracking-tight text-foreground md:text-4xl">
+                Catch Up On {data.name}
+              </h2>
+            </div>
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {episodes.map((episode, index) => {
+                const formattedDate = formatEpisodeDate(episode.publishDate)
+                return (
+                  <Link
+                    key={episode.url || index}
+                    href={episode.url || "#"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group flex flex-col overflow-hidden rounded-lg border border-border bg-background transition-all hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5"
+                  >
+                    {episode.thumbnail && (
+                      <div className="relative aspect-video w-full overflow-hidden">
+                        <Image
+                          src={episode.thumbnail}
+                          alt={episode.title || "Episode thumbnail"}
+                          fill
+                          className="object-cover transition-transform group-hover:scale-105"
+                        />
+                      </div>
+                    )}
+                    <div className="flex flex-1 flex-col gap-2 p-5">
+                      <h3 className="line-clamp-2 font-display text-base font-bold leading-snug text-foreground">
+                        {episode.title}
+                      </h3>
+                      {formattedDate && (
+                        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                          {formattedDate}
+                        </span>
+                      )}
+                      <span className="mt-auto pt-3 text-xs font-semibold uppercase tracking-wider text-primary">
+                        Watch / Listen →
+                      </span>
+                    </div>
+                  </Link>
+                )
+              })}
+            </div>
           </div>
         </section>
-      </main>
-      <SiteFooter />
-    </div>
+      )}
+
+      {embedUrl && (
+        <section className="mx-auto max-w-4xl px-4 pb-16 lg:px-8">
+          <div className="overflow-hidden rounded-lg border border-border shadow-lg">
+            <iframe
+              src={embedUrl}
+              title={`${data.name || "Show"} latest episodes`}
+              className={isSpotifyEmbed ? "h-[352px] w-full" : "aspect-video w-full"}
+              allow="autoplay; clipboard-write; encrypted-media; picture-in-picture"
+              allowFullScreen
+              loading="lazy"
+            />
+          </div>
+        </section>
+      )}
+
+      <section className="border-t border-border bg-card py-12">
+        <div className="mx-auto flex max-w-4xl flex-col items-center gap-4 px-4 text-center lg:px-8">
+          <p className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+            Explore the other shows
+          </p>
+          <Link
+            href="/#shows"
+            className="flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
+          >
+            See all shows
+            <ExternalLink className="h-3 w-3" />
+          </Link>
+        </div>
+      </section>
+    </main>
   )
 }

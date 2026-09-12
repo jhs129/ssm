@@ -10,4 +10,12 @@ export { HomeAbout, type HomeAboutProps } from './components/HomeAbout'
 export { HomeConnect, type HomeConnectProps, type SocialLink, type SocialIcon } from './components/HomeConnect'
 export { ShowSectionHeading, type ShowSectionHeadingProps } from './components/ShowSectionHeading'
 export { ShowCard, type ShowCardProps } from './components/ShowCard'
+export { SiteHeader, type SiteHeaderProps, type NavLink } from './components/SiteHeader'
+export { SiteFooter, type SiteFooterProps, type SocialLink as FooterSocialLink } from './components/SiteFooter'
+export {
+  SitePropertiesProvider,
+  useSiteProperties,
+  type SiteProperties,
+  type SocialNetwork,
+} from './contexts/SitePropertiesProvider'
 export { customComponents } from './registry'

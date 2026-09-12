@@ -2,8 +2,6 @@ import { cache } from "react"
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { fetchOneEntry, fetchEntries } from "@builder.io/sdk-react"
-import { SiteHeader } from "@/components/site-header"
-import { SiteFooter } from "@/components/site-footer"
 import RenderBuilderContent from "@/components/RenderBuilderContent"
 import { BUILDER_API_KEY } from "@/lib/builder"
 import { resolvePageUrlPath, isPreviewingFromSearchParams } from "@/lib/page-utils"
@@ -79,12 +77,8 @@ export default async function Page({ params, searchParams }: PageRouteProps) {
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <SiteHeader />
-      <main id="main-content" className="flex-grow pt-16" role="main">
-        <RenderBuilderContent content={page} model="page" />
-      </main>
-      <SiteFooter />
-    </div>
+    <main id="main-content" className="flex-grow pt-16" role="main">
+      <RenderBuilderContent content={page} model="page" />
+    </main>
   )
 }
