@@ -1,6 +1,7 @@
 import type { RegisteredComponent } from '@builder.io/sdk-react'
 import { registration as button } from '../components/Button/Button.builder.registration'
 import { registration as homeHero } from '../components/HomeHero/HomeHero.builder.registration'
+import { registration as latestVideoHero } from '../components/LatestVideoHero/LatestVideoHero.builder.registration'
 import { registration as homeAbout } from '../components/HomeAbout/HomeAbout.builder.registration'
 import { registration as homeConnect } from '../components/HomeConnect/HomeConnect.builder.registration'
 import { registration as showSectionHeading } from '../components/ShowSectionHeading/ShowSectionHeading.builder.registration'
@@ -11,6 +12,7 @@ import { registration as showCard } from '../components/ShowCard/ShowCard.builde
 export const customComponents: RegisteredComponent[] = [
   ...button,
   ...homeHero,
+  ...latestVideoHero,
   ...homeAbout,
   ...showSectionHeading,
   ...showCard,
