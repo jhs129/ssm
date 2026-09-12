@@ -55,13 +55,15 @@ export async function generateMetadata({ params }: PageRouteProps): Promise<Meta
   const urlPath = resolvePageUrlPath(segments)
   const page = await fetchPage(urlPath)
 
-  const isHomepage = urlPath === "/"
+  // Pages are indexable by default; an editor opts a page out by setting
+  // `noIndex` in its Builder metadata.
+  const noIndex = Boolean(page?.data?.metadata?.noIndex)
 
   return {
     title: page?.data?.title || undefined,
     description: page?.data?.metadata?.description || undefined,
     keywords: page?.data?.metadata?.keywords,
-    robots: isHomepage ? undefined : { index: false, follow: false },
+    robots: noIndex ? { index: false, follow: false } : undefined,
   }
 }
 
