@@ -6,6 +6,7 @@
 export { Button, buttonVariants, type ButtonProps } from './components/Button'
 export { HomeHero, type HomeHeroProps } from './components/HomeHero'
 export { HomeAbout, type HomeAboutProps } from './components/HomeAbout'
-export { HomeShows, type HomeShowsProps } from './components/HomeShows'
 export { HomeConnect, type HomeConnectProps, type SocialLink, type SocialIcon } from './components/HomeConnect'
+export { ShowSectionHeading, type ShowSectionHeadingProps } from './components/ShowSectionHeading'
+export { ShowCard, type ShowCardProps } from './components/ShowCard'
 export { customComponents } from './registry'

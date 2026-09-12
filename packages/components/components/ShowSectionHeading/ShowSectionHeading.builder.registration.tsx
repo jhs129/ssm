@@ -1,10 +1,10 @@
 import type { RegisteredComponent } from '@builder.io/sdk-react'
-import { HomeShows } from './index'
+import { ShowSectionHeading } from './index'
 
 export const registration: RegisteredComponent[] = [
   {
-    component: HomeShows,
-    name: 'Home Shows Grid',
+    component: ShowSectionHeading,
+    name: 'Show Section Heading',
     inputs: [
       {
         name: 'eyebrow',
