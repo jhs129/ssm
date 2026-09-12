@@ -1,6 +1,4 @@
 import Image from "next/image"
-import Link from "next/link"
-import { ArrowRight } from "lucide-react"
 
 export function AboutSection() {
   return (
@@ -59,14 +57,6 @@ export function AboutSection() {
                 school sports scene across the state.
               </p>
             </div>
-
-            <Link
-              href="/about"
-              className="group inline-flex items-center gap-2 font-display text-sm font-bold uppercase tracking-wider text-primary transition-colors hover:text-primary/80"
-            >
-              Read the full story
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </Link>
           </div>
         </div>
       </div>

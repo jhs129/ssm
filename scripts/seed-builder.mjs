@@ -18,6 +18,10 @@
  *      editor previews against the running app's routes.
  *   4. Seeds a sample `article` entry (`hello-world`) so /blogs/hello-world
  *      is immediately testable.
+ *   5. Creates the `show` section model used by /shows/[slug], with the
+ *      shared `metadata` model-field appended, and seeds the three real
+ *      show entries (Schneider Sports Media, Inside the Nest RHS, Atlanta
+ *      Sportscast).
  *
  * Skips `site-context`, `navigation`, and `url-redirect` — ssm has no
  * consumer for those models; its nav/footer stay coded.
@@ -63,6 +67,7 @@ const PRIVATE_KEY = process.env.BUILDER_PRIVATE_KEY;
 const PUBLIC_KEY = process.env.NEXT_PUBLIC_BUILDER_API_KEY;
 
 const ARTICLE_MODEL_NAME = "article";
+const SHOW_MODEL_NAME = "show";
 // Shared SEO metadata model, referenced as a `model`-type field by every model
 // that maps 1:1 to a web page (article, page) so they share one metadata shape.
 const METADATA_MODEL_NAME = "metadata";
@@ -131,6 +136,15 @@ const ARTICLE_PREVIEW_URL_LOGIC = [
     : "return `${baseUrl}/blogs/${content.data.handle || '_'}?preview=true`;",
 ].join("\n");
 
+// Shows render at /shows/<slug>; fall back to localhost when no site URL is
+// configured on the space.
+const SHOW_PREVIEW_URL_LOGIC = [
+  "const baseUrl = space.siteUrl || 'http://localhost:3000';",
+  bypassParams
+    ? "return `${baseUrl}/shows/${content.data.slug || '_'}?preview=true&" + bypassParams + "`;"
+    : "return `${baseUrl}/shows/${content.data.slug || '_'}?preview=true`;",
+].join("\n");
+
 // --- metadata model definition ---
 // kind: "data" — a small reusable SEO block embedded via `model`-type fields.
 const METADATA_MODEL_BODY = {
@@ -178,6 +192,175 @@ const ARTICLE_MODEL_BODY = {
     // metadata model id) — see main().
   ],
 };
+
+// --- show model definition ---
+// kind: "component" — fetched by data.slug rather than URL path, same
+// reasoning as the article model above.
+const SHOW_MODEL_BODY = {
+  name: SHOW_MODEL_NAME,
+  kind: "component",
+  showTargeting: false,
+  editingUrlLogic: SHOW_PREVIEW_URL_LOGIC,
+  fields: [
+    field("slug", "text", {
+      helperText: "URL slug for the show (used at /shows/<slug>).",
+      required: true,
+    }),
+    field("name", "text", { helperText: "Show name.", required: true }),
+    field("tagline", "text", { helperText: "Short one-line description." }),
+    field("description", "longText", {
+      helperText: "Longer description shown on the show page.",
+    }),
+    field("logo", "file", {
+      helperText: "Show logo / artwork.",
+      allowedFileTypes: ["jpeg", "jpg", "png", "svg", "webp"],
+    }),
+    field("platform", "text", {
+      helperText: "Which platform(s) this show is on.",
+      enum: ["youtube", "spotify", "both"],
+      defaultValue: "youtube",
+    }),
+    field("youtubeUrl", "text", { helperText: "YouTube channel URL, if any." }),
+    field("spotifyUrl", "text", { helperText: "Spotify show URL, if any." }),
+    field("featuredEmbedUrl", "text", {
+      helperText: "Embed src used for the live-feed player on the show page.",
+    }),
+    field("episodes", "list", {
+      helperText: "Recent episodes shown in the gallery on the show page.",
+      subFields: [
+        field("title", "text", { helperText: "Episode title.", required: true }),
+        field("url", "text", {
+          helperText: "Link to watch/listen (YouTube or Spotify episode URL).",
+          required: true,
+        }),
+        field("thumbnail", "file", {
+          helperText: "Episode thumbnail image.",
+          allowedFileTypes: ["jpeg", "jpg", "png", "svg", "webp"],
+        }),
+        field("publishDate", "date", { helperText: "Episode publish date." }),
+      ],
+    }),
+    // The `metadata` model-field is appended at runtime — see main().
+  ],
+};
+
+const SHOW_ENTRIES = [
+  {
+    slug: "schneider-sports-media",
+    data: {
+      slug: "schneider-sports-media",
+      name: "Schneider Sports Media",
+      tagline: "Georgia high school sports, covered the way it deserves to be.",
+      description:
+        "John Schneider's Georgia High School Sports Show brings the stories, spirit, and spotlight of high school athletics across the Peach State — interviews, highlights, hot takes, and hometown pride in every episode.",
+      logo: "/images/ssm-logo.png",
+      platform: "youtube",
+      youtubeUrl: "https://youtube.com/@SchneiderSportsMedia",
+      spotifyUrl: "",
+      // Left blank: YouTube's listType=user_uploads embed needs a numeric
+      // channel ID, not a @handle, and renders "This video is unavailable"
+      // without one. The show page CTA link covers this until we have one.
+      featuredEmbedUrl: "",
+      episodes: [
+        {
+          title: "Hawks, NL East Race, & NBA Offseason moves w/ the voice of the Hawks Steve Holman & Jonah Casel!",
+          url: "https://youtu.be/21-TFAE9FR4",
+          thumbnail: "https://i3.ytimg.com/vi/21-TFAE9FR4/hqdefault.jpg",
+          publishDate: "2026-07-24",
+        },
+        {
+          title: "John Schneider's Georgia High School Sports Show LIVE at the Roswell Market Expo with Rob Madden",
+          url: "https://youtu.be/p82u25ET1qM",
+          thumbnail: "https://i1.ytimg.com/vi/p82u25ET1qM/hqdefault.jpg",
+          publishDate: "2026-03-26",
+        },
+        {
+          title: "A Football Season Look Ahead, Gainesville Turnover, & MASS Coaching Carousel Cycle w/ Rob Madden",
+          url: "https://youtu.be/DxbEq2_oivA",
+          thumbnail: "https://i1.ytimg.com/vi/DxbEq2_oivA/hqdefault.jpg",
+          publishDate: "2026-02-23",
+        },
+      ],
+      metadata: {
+        description:
+          "Schneider Sports Media — authentic coverage of Georgia high school sports on YouTube.",
+        keywords: ["Schneider Sports Media", "Georgia high school sports", "podcast"],
+      },
+    },
+  },
+  {
+    slug: "inside-the-nest",
+    data: {
+      slug: "inside-the-nest",
+      name: "Inside the Nest RHS",
+      tagline: "Roswell High School sports, up close.",
+      description:
+        "Inside the Nest RHS covers Roswell High School athletics — game coverage, player interviews, and behind-the-scenes access to the Hornets' program.",
+      logo: "/images/inside-the-nest-logo.jpg",
+      platform: "youtube",
+      youtubeUrl: "https://www.youtube.com/@InsideTheNestRHS27",
+      spotifyUrl: "",
+      featuredEmbedUrl: "",
+      episodes: [
+        {
+          title: "Hornets' Offense Responds in Route Over Etowah | Etowah Game Reaction Show",
+          url: "https://youtu.be/Cuzu0R0G5nc",
+          thumbnail: "https://i4.ytimg.com/vi/Cuzu0R0G5nc/hqdefault.jpg",
+          publishDate: "2026-09-10",
+        },
+        {
+          title: "The Roswell Football Report w/ Sawyer Polikov | Week 3 at Etowah",
+          url: "https://youtu.be/6O6fJF3KVyc",
+          thumbnail: "https://i3.ytimg.com/vi/6O6fJF3KVyc/hqdefault.jpg",
+          publishDate: "2026-09-05",
+        },
+        {
+          title: "Roswell Offense Silenced in 42-15 Loss to Newton | Newton Game Reaction Show",
+          url: "https://youtu.be/Nm_dkHM38iU",
+          thumbnail: "https://i3.ytimg.com/vi/Nm_dkHM38iU/hqdefault.jpg",
+          publishDate: "2026-09-01",
+        },
+        {
+          title: "SCHLETTY TD EARLY To put up Roswell 7-0 on Newton! #insidethenest #highschoolfootball #rhs",
+          url: "https://youtu.be/WcNfX6f2HRE",
+          thumbnail: "https://i4.ytimg.com/vi/WcNfX6f2HRE/hqdefault.jpg",
+          publishDate: "2026-08-28",
+        },
+      ],
+      metadata: {
+        description: "Inside the Nest RHS — Roswell High School sports coverage on YouTube.",
+        keywords: ["Inside the Nest", "Roswell High School", "RHS sports"],
+      },
+    },
+  },
+  {
+    slug: "atlanta-sportscast",
+    data: {
+      slug: "atlanta-sportscast",
+      name: "Atlanta Sportscast",
+      tagline: "Atlanta sports talk, every week.",
+      description:
+        "Atlanta Sportscast covers the city's pro and college sports scene with conversation, analysis, and takes on the teams Atlanta cares about most.",
+      logo: "/images/atlanta-sportscast-logo.jpg",
+      platform: "spotify",
+      youtubeUrl: "",
+      spotifyUrl: "https://open.spotify.com/show/2jHXt2YAFL2t6TnK1MI6Tw",
+      featuredEmbedUrl: "https://open.spotify.com/embed/show/2jHXt2YAFL2t6TnK1MI6Tw",
+      episodes: [
+        {
+          title: "Our 2nd Annual College Football Season Preview + To Expand or Not To Expand the CFP... w/ Zach Seyko",
+          url: "https://open.spotify.com/episode/69Yj5mcQEZAnItVGFxyw1e",
+          thumbnail: "https://image-cdn-ak.spotifycdn.com/image/ab6765630000ba8a47d74c3d74df7d2d13b10498",
+          publishDate: "2026-08-25",
+        },
+      ],
+      metadata: {
+        description: "Atlanta Sportscast — Atlanta sports talk on Spotify.",
+        keywords: ["Atlanta Sportscast", "Atlanta sports", "podcast"],
+      },
+    },
+  },
+];
 
 const SAMPLE_ARTICLE_HANDLE = "hello-world";
 
@@ -364,21 +547,35 @@ async function main() {
   }
   await ensureModelHasFields(PAGE_MODEL_NAME, [metaField], models);
 
+  // Same pattern for the show model.
+  SHOW_MODEL_BODY.fields.push(metaField);
+  const createdShow = await ensureModel(SHOW_MODEL_BODY, existingNames);
+  if (!createdShow) {
+    await ensureModelHasFields(SHOW_MODEL_NAME, [metaField], models);
+  }
+
   // Dynamic preview URLs: the built-in `page` model always needs it set here;
-  // the `article` model gets it from ARTICLE_MODEL_BODY when freshly created,
-  // otherwise update the existing model.
+  // the `article`/`show` models get it from their *_BODY when freshly
+  // created, otherwise update the existing model.
   await ensurePreviewUrl(PAGE_MODEL_NAME, PAGE_PREVIEW_URL_LOGIC, models);
   if (!createdArticle) {
     await ensurePreviewUrl(ARTICLE_MODEL_NAME, ARTICLE_PREVIEW_URL_LOGIC, models);
   }
+  if (!createdShow) {
+    await ensurePreviewUrl(SHOW_MODEL_NAME, SHOW_PREVIEW_URL_LOGIC, models);
+  }
 
   // The CDN takes a moment to register a brand-new model before it will
   // accept writes against it.
-  if (createdArticle) {
+  if (createdArticle || createdShow) {
     await new Promise((r) => setTimeout(r, 2000));
   }
 
   await ensureContent(ARTICLE_MODEL_NAME, SAMPLE_ARTICLE_HANDLE, SAMPLE_ARTICLE_DATA);
+
+  for (const show of SHOW_ENTRIES) {
+    await ensureContent(SHOW_MODEL_NAME, show.slug, show.data);
+  }
 
   console.log("\nDone.\n");
 }

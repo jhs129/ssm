@@ -22,7 +22,8 @@ export function SiteFooter() {
               </span>
             </Link>
             <p className="max-w-sm text-center text-sm leading-relaxed text-muted-foreground md:text-left">
-              Covering Georgia high school sports the way it deserves to be covered.
+              Video, audio, and storytelling covering Georgia high school sports — Schneider
+              Sports Media, Inside the Nest RHS, and Atlanta Sportscast.
             </p>
           </div>
 

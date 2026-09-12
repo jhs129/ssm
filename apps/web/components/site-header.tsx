@@ -3,19 +3,26 @@
 import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { Menu, X } from "lucide-react"
+import { Menu, X, ChevronDown } from "lucide-react"
+
+const shows = [
+  { label: "Schneider Sports Media", href: "/shows/schneider-sports-media" },
+  { label: "Inside the Nest RHS", href: "/shows/inside-the-nest" },
+  { label: "Atlanta Sportscast", href: "/shows/atlanta-sportscast" },
+]
 
 const navLinks = [
   { label: "Home", href: "/" },
-  { label: "About", href: "/about" },
-  { label: "The Show", href: "/#show" },
-  { label: "Watch & Listen", href: "/#watch" },
-  { label: "Blog", href: "/blogs" },
+  { label: "About", href: "/#about" },
+  // Blog nav link removed until real posts replace the placeholder content —
+  // add { label: "Blog", href: "/blogs" } back here to restore it.
   { label: "Connect", href: "/#connect" },
 ]
 
 export function SiteHeader() {
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [showsOpen, setShowsOpen] = useState(false)
+  const [mobileShowsOpen, setMobileShowsOpen] = useState(false)
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/90 backdrop-blur-md">
@@ -34,15 +41,56 @@ export function SiteHeader() {
         </Link>
 
         <nav className="hidden items-center gap-1 md:flex">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="rounded-md px-4 py-2 text-sm font-semibold uppercase tracking-wider text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          <Link
+            href="/"
+            className="rounded-md px-4 py-2 text-sm font-semibold uppercase tracking-wider text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          >
+            Home
+          </Link>
+          <Link
+            href="/#about"
+            className="rounded-md px-4 py-2 text-sm font-semibold uppercase tracking-wider text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          >
+            About
+          </Link>
+
+          <div
+            className="relative"
+            onMouseEnter={() => setShowsOpen(true)}
+            onMouseLeave={() => setShowsOpen(false)}
+          >
+            <button
+              className="flex items-center gap-1 rounded-md px-4 py-2 text-sm font-semibold uppercase tracking-wider text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              aria-expanded={showsOpen}
+              aria-haspopup="true"
+              onClick={() => setShowsOpen(true)}
             >
-              {link.label}
-            </Link>
-          ))}
+              Shows
+              <ChevronDown className="h-3.5 w-3.5" />
+            </button>
+            {showsOpen && (
+              <div className="absolute left-0 top-full w-64 rounded-md border border-border bg-background p-1 shadow-lg">
+                {shows.map((show) => (
+                  <Link
+                    key={show.href}
+                    href={show.href}
+                    className="block rounded-md px-4 py-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                  >
+                    {show.label}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Blog nav link removed until real posts replace the placeholder content —
+              add <Link href="/blogs">Blog</Link> back here to restore it. */}
+          <Link
+            href="/#connect"
+            className="rounded-md px-4 py-2 text-sm font-semibold uppercase tracking-wider text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          >
+            Connect
+          </Link>
         </nav>
 
         <button
@@ -56,7 +104,41 @@ export function SiteHeader() {
 
       {mobileOpen && (
         <nav className="border-t border-border/50 bg-background px-4 pb-6 pt-2 md:hidden">
-          {navLinks.map((link) => (
+          {navLinks.slice(0, 2).map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              onClick={() => setMobileOpen(false)}
+              className="block rounded-md px-4 py-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            >
+              {link.label}
+            </Link>
+          ))}
+
+          <button
+            onClick={() => setMobileShowsOpen((open) => !open)}
+            className="flex w-full items-center justify-between rounded-md px-4 py-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            aria-expanded={mobileShowsOpen}
+          >
+            Shows
+            <ChevronDown className={`h-4 w-4 transition-transform ${mobileShowsOpen ? "rotate-180" : ""}`} />
+          </button>
+          {mobileShowsOpen && (
+            <div className="pl-4">
+              {shows.map((show) => (
+                <Link
+                  key={show.href}
+                  href={show.href}
+                  onClick={() => setMobileOpen(false)}
+                  className="block rounded-md px-4 py-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                >
+                  {show.label}
+                </Link>
+              ))}
+            </div>
+          )}
+
+          {navLinks.slice(2).map((link) => (
             <Link
               key={link.href}
               href={link.href}
