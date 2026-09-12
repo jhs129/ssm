@@ -16,7 +16,7 @@ const navLinks = [
   { label: "About", href: "/#about" },
   // Blog nav link removed until real posts replace the placeholder content —
   // add { label: "Blog", href: "/blogs" } back here to restore it.
-  { label: "Connect", href: "/#connect" },
+  { label: "Connect", href: "/contact" },
 ]
 
 export function SiteHeader() {
@@ -86,7 +86,7 @@ export function SiteHeader() {
           {/* Blog nav link removed until real posts replace the placeholder content —
               add <Link href="/blogs">Blog</Link> back here to restore it. */}
           <Link
-            href="/#connect"
+            href="/contact"
             className="rounded-md px-4 py-2 text-sm font-semibold uppercase tracking-wider text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           >
             Connect
