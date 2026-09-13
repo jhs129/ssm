@@ -169,28 +169,32 @@ export default async function ShowPage({ params, searchParams }: ShowRouteProps)
                 Catch Up On {data.name}
               </h2>
             </div>
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-3 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
               {episodes.map((episode, index) => {
                 const formattedDate = formatEpisodeDate(episode.publishDate)
                 return (
+                  // Compact row on phones — the stacked card ran ~450px tall,
+                  // which meant roughly one episode per screen. Reverts to the
+                  // stacked card from sm up, where the grid has columns.
                   <Link
                     key={episode.url || index}
                     href={episode.url || "#"}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group flex flex-col overflow-hidden rounded-lg border border-border bg-background transition-all hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5"
+                    className="group flex items-center gap-4 overflow-hidden rounded-lg border border-border bg-background p-3 transition-all hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5 sm:flex-col sm:items-stretch sm:gap-0 sm:p-0"
                   >
                     {episode.thumbnail && (
-                      <div className="relative aspect-video w-full overflow-hidden">
+                      <div className="relative aspect-video w-32 shrink-0 overflow-hidden rounded-md sm:w-full sm:rounded-none">
                         <Image
                           src={episode.thumbnail}
                           alt={episode.title || "Episode thumbnail"}
                           fill
                           className="object-cover transition-transform group-hover:scale-105"
+                          sizes="(min-width: 640px) 384px, 128px"
                         />
                       </div>
                     )}
-                    <div className="flex flex-1 flex-col gap-2 p-5">
+                    <div className="flex min-w-0 flex-1 flex-col gap-1 sm:gap-2 sm:p-5">
                       <h3 className="line-clamp-2 font-display text-base font-bold leading-snug text-foreground">
                         {episode.title}
                       </h3>
@@ -199,7 +203,7 @@ export default async function ShowPage({ params, searchParams }: ShowRouteProps)
                           {formattedDate}
                         </span>
                       )}
-                      <span className="mt-auto pt-3 text-xs font-semibold uppercase tracking-wider text-primary">
+                      <span className="text-xs font-semibold uppercase tracking-wider text-primary sm:mt-auto sm:pt-3">
                         Watch / Listen →
                       </span>
                     </div>

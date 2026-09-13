@@ -12,7 +12,9 @@ export function ShowSectionHeading({
   subheading = 'Video, audio, and everything in between — covering Georgia sports from every angle.',
 }: ShowSectionHeadingProps) {
   return (
-    <div className="mb-16 flex flex-col items-center text-center">
+    // The hero CTA and every show page's "See all shows" link target #shows,
+    // so this heading owns the anchor. scroll-mt clears the fixed header.
+    <div id="shows" className="mb-16 flex scroll-mt-24 flex-col items-center text-center">
       <span className="mb-3 font-display text-sm font-bold uppercase tracking-[0.2em] text-secondary">
         {eyebrow}
       </span>
