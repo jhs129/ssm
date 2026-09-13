@@ -50,6 +50,18 @@ export function LatestVideoHero({ eyebrow = 'Latest Episode' }: LatestVideoHeroP
     }
   }, [])
 
+  // Next.js scrolls to the URL hash once, on initial mount — before this
+  // component's async fetch resolves. Swapping the loading skeleton for real
+  // content changes this section's height and shifts everything below it
+  // (including any hash target further down the page), leaving the scroll
+  // position stale. Re-apply the hash scroll once this section has settled.
+  useEffect(() => {
+    if (loading) return
+    const hash = window.location.hash
+    if (!hash) return
+    document.querySelector(hash)?.scrollIntoView()
+  }, [loading])
+
   if (loading) {
     return (
       <section className="border-y border-border bg-card py-16">
