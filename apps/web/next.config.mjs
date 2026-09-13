@@ -13,6 +13,8 @@ const nextConfig = {
     remotePatterns: [
       { protocol: "https", hostname: "placehold.co" },
       { protocol: "https", hostname: "cdn.builder.io" },
+      { protocol: "https", hostname: "*.ytimg.com" },
+      { protocol: "https", hostname: "*.spotifycdn.com" },
     ],
   },
 }

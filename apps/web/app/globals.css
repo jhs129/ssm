@@ -12,6 +12,20 @@ body {
   }
 }
 
+/* Builder's Columns block forces `margin-left: 0` on every column once it
+ * stacks (at or below 991px, its "tablet" breakpoint) but never substitutes
+ * any vertical spacing, so stacked blocks end up flush against each other.
+ * `row-gap` is inert on a row-direction flex container, so this only applies
+ * once the columns have actually stacked — a `stackColumnsAt: "never"` block
+ * and every desktop layout are untouched. 1.5rem matches the 24px horizontal
+ * gutter the columns use side by side.
+ */
+@media (max-width: 991px) {
+  .builder-columns {
+    row-gap: 1.5rem;
+  }
+}
+
 @layer base {
   :root {
     --background: 220 30% 5%;
