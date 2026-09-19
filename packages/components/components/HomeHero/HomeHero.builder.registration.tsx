@@ -7,6 +7,14 @@ export const registration: RegisteredComponent[] = [
     name: 'Home Hero',
     inputs: [
       {
+        name: 'layout',
+        type: 'string',
+        enum: ['framed', 'fullBleed'],
+        defaultValue: 'framed',
+        helperText:
+          "Rendering style. 'framed' shows the portrait beside the copy on desktop (current look). 'fullBleed' keeps the photo full-bleed behind the headline at every screen size.",
+      },
+      {
         name: 'photo',
         type: 'file',
         allowedFileTypes: ['jpeg', 'jpg', 'png', 'svg', 'webp'],
