@@ -26,20 +26,20 @@ function formatEpisodeDate(value?: string) {
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
 
-export function LatestVideoHero({ eyebrow = 'Latest Episode' }: LatestVideoHeroProps) {
-  const [episode, setEpisode] = useState<LatestEpisode | null>(null)
+export function LatestVideoHero({ eyebrow = 'Latest Episodes' }: LatestVideoHeroProps) {
+  const [episodes, setEpisodes] = useState<LatestEpisode[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     let cancelled = false
 
-    fetch('/api/latest-episode')
+    fetch('/api/latest-episodes')
       .then((res) => res.json())
       .then((data) => {
-        if (!cancelled) setEpisode(data.episode)
+        if (!cancelled) setEpisodes(Array.isArray(data.episodes) ? data.episodes : [])
       })
       .catch(() => {
-        if (!cancelled) setEpisode(null)
+        if (!cancelled) setEpisodes([])
       })
       .finally(() => {
         if (!cancelled) setLoading(false)
@@ -65,18 +65,25 @@ export function LatestVideoHero({ eyebrow = 'Latest Episode' }: LatestVideoHeroP
   if (loading) {
     return (
       <section className="border-y border-border bg-card py-16">
-        <div className="mx-auto max-w-6xl animate-pulse px-4 lg:px-8">
-          <div className="aspect-video w-full rounded-lg bg-muted" />
+        <div className="mx-auto grid max-w-6xl gap-6 px-4 sm:grid-cols-3 lg:px-8">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <div key={index} className="animate-pulse overflow-hidden rounded-lg border border-border">
+              <div className="aspect-video w-full bg-muted" />
+              <div className="space-y-2 bg-background p-5">
+                <div className="h-3 w-1/3 rounded bg-muted" />
+                <div className="h-4 w-full rounded bg-muted" />
+                <div className="h-3 w-1/4 rounded bg-muted" />
+              </div>
+            </div>
+          ))}
         </div>
       </section>
     )
   }
 
-  if (!episode) {
+  if (episodes.length === 0) {
     return null
   }
-
-  const formattedDate = formatEpisodeDate(episode.publishDate)
 
   return (
     <section className="border-y border-border bg-card py-16">
@@ -86,51 +93,63 @@ export function LatestVideoHero({ eyebrow = 'Latest Episode' }: LatestVideoHeroP
             {eyebrow}
           </span>
         </div>
-        <Link
-          href={episode.url || '#'}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group grid gap-8 overflow-hidden rounded-lg border border-border bg-background transition-all hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 lg:grid-cols-2 lg:items-center"
-        >
-          <div className="relative aspect-video w-full overflow-hidden lg:aspect-auto lg:h-full">
-            {episode.thumbnail && (
-              <Image
-                src={episode.thumbnail}
-                alt={episode.title || 'Latest episode thumbnail'}
-                fill
-                className="object-cover transition-transform group-hover:scale-105"
-              />
-            )}
-            <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 transition-opacity group-hover:opacity-100">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/90 text-primary-foreground">
-                <Play className="h-6 w-6 translate-x-0.5" fill="currentColor" />
-              </div>
-            </div>
-          </div>
-          <div className="flex flex-col gap-3 p-8 lg:p-10">
-            {episode.showLogo && (
-              <div className="flex items-center gap-2">
-                <div className="relative h-8 w-8 overflow-hidden rounded-full border border-border">
-                  <Image src={episode.showLogo} alt={episode.showName || 'Show logo'} fill className="object-cover" />
+        {/* Each card stacks its thumbnail above its copy; the cards themselves
+            stack vertically on mobile and lay out side by side from sm up. */}
+        <div className="grid gap-6 sm:grid-cols-3">
+          {episodes.map((episode) => {
+            const formattedDate = formatEpisodeDate(episode.publishDate)
+
+            return (
+              <Link
+                key={episode.url}
+                href={episode.url || '#'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex flex-col overflow-hidden rounded-lg border border-border bg-background transition-all hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10"
+              >
+                <div className="relative aspect-video w-full overflow-hidden">
+                  {episode.thumbnail && (
+                    <Image
+                      src={episode.thumbnail}
+                      alt={episode.title || 'Episode thumbnail'}
+                      fill
+                      className="object-cover transition-transform group-hover:scale-105"
+                      sizes="(min-width: 640px) 33vw, 100vw"
+                    />
+                  )}
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 transition-opacity group-hover:opacity-100">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/90 text-primary-foreground">
+                      <Play className="h-5 w-5 translate-x-0.5" fill="currentColor" />
+                    </div>
+                  </div>
                 </div>
-                <span className="font-display text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                  {episode.showName}
-                </span>
-              </div>
-            )}
-            <h3 className="font-display text-2xl font-bold uppercase leading-snug tracking-tight text-foreground md:text-3xl">
-              {episode.title}
-            </h3>
-            {formattedDate && (
-              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                {formattedDate}
-              </span>
-            )}
-            <span className="mt-2 text-sm font-semibold uppercase tracking-wider text-primary">
-              Watch Now →
-            </span>
-          </div>
-        </Link>
+                <div className="flex flex-1 flex-col gap-2 p-5">
+                  {episode.showLogo && (
+                    <div className="flex items-center gap-2">
+                      <div className="relative h-6 w-6 overflow-hidden rounded-full border border-border">
+                        <Image src={episode.showLogo} alt={episode.showName || 'Show logo'} fill className="object-cover" />
+                      </div>
+                      <span className="font-display text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                        {episode.showName}
+                      </span>
+                    </div>
+                  )}
+                  <h3 className="line-clamp-2 font-display text-base font-bold uppercase leading-snug tracking-tight text-foreground">
+                    {episode.title}
+                  </h3>
+                  {formattedDate && (
+                    <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                      {formattedDate}
+                    </span>
+                  )}
+                  <span className="mt-auto pt-2 text-sm font-semibold uppercase tracking-wider text-primary">
+                    Watch Now →
+                  </span>
+                </div>
+              </Link>
+            )
+          })}
+        </div>
       </div>
     </section>
   )
