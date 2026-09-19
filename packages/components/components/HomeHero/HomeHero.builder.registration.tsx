@@ -9,10 +9,13 @@ export const registration: RegisteredComponent[] = [
       {
         name: 'layout',
         type: 'string',
-        enum: ['framed', 'fullBleed'],
+        enum: [
+          { label: 'Framed (portrait beside copy)', value: 'framed' },
+          { label: 'Full Bleed (photo fills background)', value: 'fullBleed' },
+        ],
         defaultValue: 'framed',
         helperText:
-          "Rendering style. 'framed' shows the portrait beside the copy on desktop (current look). 'fullBleed' keeps the photo full-bleed behind the headline at every screen size.",
+          "Rendering style. 'Framed' shows the portrait beside the copy on desktop (current look). 'Full Bleed' keeps the photo full-bleed behind the headline at every screen size.",
       },
       {
         name: 'photo',
@@ -21,6 +24,22 @@ export const registration: RegisteredComponent[] = [
         defaultValue: '/images/john-schneider.png',
         helperText:
           'Portrait photo. Framed beside the headline on desktop; full-bleed behind the headline on mobile, so keep the subject in the upper half.',
+      },
+      {
+        name: 'photoPosition',
+        type: 'string',
+        enum: [
+          { label: 'Top', value: 'top' },
+          { label: 'Top Right', value: 'top right' },
+          { label: 'Top Left', value: 'top left' },
+          { label: 'Center', value: 'center' },
+          { label: 'Bottom', value: 'bottom' },
+          { label: 'Bottom Right', value: 'bottom right' },
+          { label: 'Bottom Left', value: 'bottom left' },
+        ],
+        defaultValue: 'top',
+        helperText:
+          'Which part of the photo stays visible when it\'s cropped to fill the hero. Use this to reveal more of the background (e.g. people or signage near the top) instead of having it cropped off.',
       },
       {
         name: 'logoImage',

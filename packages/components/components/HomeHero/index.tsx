@@ -6,9 +6,13 @@ import { ArrowDown } from 'lucide-react'
 
 export type HomeHeroLayout = 'framed' | 'fullBleed'
 
+// Any valid CSS object-position value, e.g. 'top', 'center', or '50% 30%'.
+export type HomeHeroPhotoPosition = string
+
 export interface HomeHeroProps {
   layout?: HomeHeroLayout
   photo?: string
+  photoPosition?: HomeHeroPhotoPosition
   logoImage?: string
   heading?: string
   subheading?: string
@@ -21,6 +25,7 @@ export interface HomeHeroProps {
 export function HomeHero({
   layout = 'framed',
   photo = '/images/john-schneider.png',
+  photoPosition = 'top',
   logoImage = '/images/ssm-logo.png',
   heading = 'Schneider Sports Media',
   subheading = 'Georgia high school sports, covered the way it deserves to be.',
@@ -37,11 +42,21 @@ export function HomeHero({
     // 'framed' layout reverts to a portrait beside the copy while 'fullBleed'
     // keeps the same cinematic treatment at every breakpoint.
     <section
-      className={`relative flex min-h-[88svh] items-end overflow-hidden lg:min-h-screen ${
-        isFullBleed ? 'lg:items-end lg:justify-center' : 'lg:items-center'
+      className={`relative flex min-h-[88svh] items-end overflow-hidden ${
+        isFullBleed ? 'lg:min-h-[70vh] lg:items-end lg:justify-center' : 'lg:min-h-screen lg:items-center'
       }`}
     >
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_hsl(225,100%,18%)_0%,_hsl(220,30%,5%)_70%)]" />
+
+      {isFullBleed && (
+        <Image
+          src={logoImage}
+          alt="Schneider Sports Media logo"
+          width={72}
+          height={72}
+          className="absolute right-6 top-6 z-20 hidden rounded-full shadow-lg shadow-primary/30 lg:block"
+        />
+      )}
 
       <div
         className="absolute inset-0 opacity-[0.04]"
@@ -77,7 +92,8 @@ export function HomeHero({
               src={photo}
               alt="John Schneider on the sidelines at a Georgia high school football game"
               fill
-              className="object-cover object-top"
+              className="object-cover"
+              style={{ objectPosition: photoPosition }}
               priority
               sizes={isFullBleed ? '100vw' : '(min-width: 1024px) 380px, 100vw'}
             />
@@ -100,14 +116,17 @@ export function HomeHero({
           }`}
         >
           {/* Redundant with the fixed header logo on mobile, where vertical
-              space above the fold is the scarce resource. */}
-          <Image
-            src={logoImage}
-            alt="Schneider Sports Media logo"
-            width={72}
-            height={72}
-            className="hidden rounded-full shadow-lg shadow-primary/30 lg:block"
-          />
+              space above the fold is the scarce resource. In fullBleed layout
+              the logo moves to the top-right corner instead (rendered above). */}
+          {!isFullBleed && (
+            <Image
+              src={logoImage}
+              alt="Schneider Sports Media logo"
+              width={72}
+              height={72}
+              className="hidden rounded-full shadow-lg shadow-primary/30 lg:block"
+            />
+          )}
 
           <div className={`flex flex-col items-center gap-3 lg:gap-4 ${isFullBleed ? 'lg:items-center' : 'lg:items-start'}`}>
             <h1 className="text-balance font-display text-4xl font-bold uppercase leading-tight tracking-tight text-foreground sm:text-5xl md:text-6xl lg:text-7xl">
