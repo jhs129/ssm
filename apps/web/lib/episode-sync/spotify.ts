@@ -47,6 +47,7 @@ export async function fetchSpotifyEpisodes(spotifyUrl: string, limit = 5): Promi
 
   const res = await fetch(`https://api.spotify.com/v1/shows/${showId}/episodes?market=US&limit=${limit}`, {
     headers: { Authorization: `Bearer ${token}` },
+    next: { revalidate: 300 },
   })
   if (!res.ok) return []
 

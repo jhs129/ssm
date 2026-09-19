@@ -10,7 +10,10 @@ const BROWSER_USER_AGENT =
 export async function resolveYoutubeChannelId(youtubeUrl: string): Promise<string | null> {
   if (!youtubeUrl) return null
 
-  const res = await fetch(youtubeUrl, { headers: { 'User-Agent': BROWSER_USER_AGENT } })
+  const res = await fetch(youtubeUrl, {
+    headers: { 'User-Agent': BROWSER_USER_AGENT },
+    next: { revalidate: 300 },
+  })
   if (!res.ok) return null
 
   const html = await res.text()
@@ -31,6 +34,7 @@ function decodeXmlEntities(value: string): string {
 export async function fetchYoutubeEpisodes(channelId: string, limit = 5): Promise<SyncedEpisode[]> {
   const res = await fetch(`https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`, {
     headers: { 'User-Agent': BROWSER_USER_AGENT },
+    next: { revalidate: 300 },
   })
   if (!res.ok) return []
 
